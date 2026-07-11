@@ -6,7 +6,7 @@ import java.time.ZonedDateTime;
 import java.util.Set;
 
 @Entity
-@Table(name = "roles") // [cite: 6]
+@Table(name = "roles")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -16,23 +16,23 @@ public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "role_id")
-    private Integer roleId; // [cite: 7]
+    private Integer roleId;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role_name", nullable = false)
-    private RoleNameEnum roleName; // [cite: 7, 64]
+    private RoleNameEnum roleName;
 
     @Column(name = "description", columnDefinition = "TEXT")
-    private String description; // [cite: 7]
+    private String description;
 
     @Column(name = "created_at", updatable = false)
-    private ZonedDateTime createdAt; // [cite: 7]
+    private ZonedDateTime createdAt;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-            name = "role_permissions", // [cite: 12]
-            joinColumns = @JoinColumn(name = "role_id"), // [cite: 13]
-            inverseJoinColumns = @JoinColumn(name = "permission_id") // [cite: 13]
+            name = "role_permissions",
+            joinColumns = @JoinColumn(name = "role_id"),
+            inverseJoinColumns = @JoinColumn(name = "permission_id")
     )
     private Set<Permission> permissions;
 }
