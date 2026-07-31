@@ -1,5 +1,6 @@
 package com.busbooking.system.entity;
 
+import com.busbooking.system.entity.enums.PaymentMethodEnum;
 import com.busbooking.system.entity.enums.PaymentStatusEnum;
 import jakarta.persistence.*;
 import lombok.*;
@@ -24,7 +25,7 @@ public class Payment {
     private Booking booking; // [cite: 60]
 
     @Column(name = "payment_method", length = 30, nullable = false)
-    private String paymentMethod; // [cite: 60]
+    private PaymentMethodEnum paymentMethod; // [cite: 60]
 
     @Column(name = "payment_gateway", length = 50)
     private String paymentGateway; // [cite: 60]

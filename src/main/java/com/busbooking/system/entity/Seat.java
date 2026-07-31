@@ -1,5 +1,6 @@
 package com.busbooking.system.entity;
 
+import com.busbooking.system.entity.enums.SeatTypeEnum;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -37,7 +38,7 @@ public class Seat {
     private Short columnNumber;
 
     @Column(name = "seat_type", length = 30, nullable = false)
-    private String seatType;
+    private SeatTypeEnum seatType;
 
     @Column(name = "is_ladies_seat", nullable = false)
     private Boolean isLadiesSeat = false;

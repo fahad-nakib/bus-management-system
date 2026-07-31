@@ -1,5 +1,6 @@
 package com.busbooking.system.entity;
 
+import com.busbooking.system.entity.enums.DeckTypeEnum;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,7 +25,7 @@ public class Deck {
     private BusLayout busLayout;
 
     @Column(name = "deck_type", length = 20, nullable = false)
-    private String deckType;
+    private DeckTypeEnum deckType;
 
     @Column(name = "deck_label", length = 10, nullable = false)
     private String deckLabel;

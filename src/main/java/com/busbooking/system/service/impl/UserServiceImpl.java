@@ -1,54 +1,117 @@
 package com.busbooking.system.service.impl;
 
-import com.busbooking.system.dto.UserRegisterRequest;
+import com.busbooking.system.dto.PermissionResponseDTO;
+import com.busbooking.system.dto.RoleResponseDTO;
+import com.busbooking.system.dto.UserRegisterRequestDTO;
+import com.busbooking.system.dto.UserResponseDTO;
+import com.busbooking.system.entity.Role;
 import com.busbooking.system.entity.User;
+import com.busbooking.system.entity.enums.RoleNameEnum;
+import com.busbooking.system.repository.RoleRepository;
 import com.busbooking.system.repository.UserRepository;
 import com.busbooking.system.service.UserService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder; // পাসওয়ার্ড হ্যাশ করার জন্য
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.ZonedDateTime;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
-    // কনস্ট্রাক্টর ইনজেকশন (Autowired এর চেয়ে এটি বেশি রিকমেন্ডেড)
-    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
+    @Override
+    @Transactional
+    public UserResponseDTO registerUser(UserRegisterRequestDTO request) {
+        // ১. ইউনিকনেস চেক (Email & Phone)
+        if (request.getEmail() != null && userRepository.existsByEmail(request.getEmail())) {
+            throw new RuntimeException("Email is already registered!");
+        }
+        if (userRepository.existsByPhoneNumber(request.getPhoneNumber())) {
+            throw new RuntimeException("Phone number is already registered!");
+        }
+
+        // ২. ডাটাবেজ থেকে ডিফল্ট PASSENGER রোলটি খুঁজে বের করা
+        // নোট: যদি আপনার এনামে নাম ভিন্ন হয় (যেমন: ROLE_PASSENGER), তবে সেটি ব্যবহার করুন
+        Role passengerRole = roleRepository.findByRoleName(RoleNameEnum.PASSENGER)
+                .orElseThrow(() -> new RuntimeException("Default role 'PASSENGER' not found in the database. Please seed the roles first."));
+
+        // ৩. নতুন ইউজার অবজেক্ট তৈরি এবং ডাটা সেট করা
+        User user = new User();
+        user.setFullName(request.getFullName());
+        user.setEmail(request.getEmail());
+        user.setPhoneNumber(request.getPhoneNumber());
+        user.setNidOrPassport(request.getNidOrPassport());
+
+        // পাসওয়ার্ড হ্যাশ বা এনক্রিপ্ট করা
+        user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
+
+        // ডিফল্ট ভ্যালু সেট (যদিও এনটিটিতে সেট করা আছে, সেফটির জন্য কোডেও দেওয়া ভালো)
+        user.setIsActive(true);
+        user.setIsEmailVerified(false);
+        user.setIsPhoneVerified(false);
+        user.setCreatedAt(ZonedDateTime.now());
+
+        // রোল অ্যাসাইন করা
+        Set<Role> defaultRoles = new HashSet<>();
+        defaultRoles.add(passengerRole);
+        user.setRoles(defaultRoles);
+
+        // ডাটাবেজে সেভ করা
+        User savedUser = userRepository.save(user);
+        return mapToResponseDTO(savedUser);
     }
 
     @Override
-    @Transactional // কোনো এরর হলে ডাটা রোলব্যাক করার জন্য
-    public User registerNewUser(UserRegisterRequest registerRequest) {
+    @Transactional(readOnly = true)
+    public UserResponseDTO getUserById(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+        return mapToResponseDTO(user);
+    }
 
-        // ১. ফোন নম্বর অলরেডি আছে কি না চেক করা
-        if (userRepository.existsByPhoneNumber(registerRequest.getPhoneNumber())) {
-            throw new RuntimeException("এই মোবাইল নম্বরটি দিয়ে ইতিপূর্ধেই অ্যাকাউন্ট খোলা হয়েছে!");
+    @Override
+    @Transactional(readOnly = true)
+    public List<UserResponseDTO> getAllUsers() {
+        return userRepository.findAll().stream()
+                .map(this::mapToResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    // User Entity থেকে Response DTO তে কনভার্ট করার মেথড
+    private UserResponseDTO mapToResponseDTO(User user) {
+        UserResponseDTO response = new UserResponseDTO();
+        response.setUserId(user.getUserId());
+        response.setFullName(user.getFullName());
+        response.setEmail(user.getEmail());
+        response.setPhoneNumber(user.getPhoneNumber());
+        response.setNidOrPassport(user.getNidOrPassport());
+        response.setIsActive(user.getIsActive());
+        response.setIsEmailVerified(user.getIsEmailVerified());
+        response.setIsPhoneVerified(user.getIsPhoneVerified());
+        response.setCreatedAt(user.getCreatedAt());
+
+        if (user.getRoles() != null) {
+            Set<RoleResponseDTO> roleDTOs = user.getRoles().stream()
+                    .map(role -> {
+                        RoleResponseDTO rDto = new RoleResponseDTO();
+                        rDto.setRoleId(role.getRoleId());
+                        rDto.setRoleName(role.getRoleName());
+                        rDto.setDescription(role.getDescription());
+                        rDto.setCreatedAt(role.getCreatedAt());
+                        return rDto;
+                    }).collect(Collectors.toSet());
+            response.setRoles(roleDTOs);
         }
-
-        // ২. ইমেইল দেওয়া থাকলে সেটি অলরেডি আছে কি না চেক করা
-        if (registerRequest.getEmail() != null && !registerRequest.getEmail().isBlank()) {
-            if (userRepository.existsByEmail(registerRequest.getEmail())) {
-                throw new RuntimeException("এই ইমেইলটি ইতিপূর্ধেই ব্যবহার করা হয়েছে!");
-            }
-        }
-
-        // ৩. নতুন ইউজার এন্টিটি অবজেক্ট তৈরি করা
-        User user = new User();
-        user.setFullName(registerRequest.getFullName());
-        user.setPhoneNumber(registerRequest.getPhoneNumber());
-        user.setEmail(registerRequest.getEmail());
-        user.setNidOrPassport(registerRequest.getNidOrPassport());
-
-        // ৪. পাসওয়ার্ড হ্যাশ (Encrypt) করা
-        String hashedPassword = passwordEncoder.encode(registerRequest.getPassword());
-        user.setPasswordHash(hashedPassword);
-
-        // ৫. ডাটাবেজে সেভ করা এবং রিটার্ন করা
-        // (নোট: isActive, isEmailVerified, isPhoneVerified, createdAt এগুলো অটো সেট হবে)
-        return userRepository.save(user);
+        return response;
     }
 }

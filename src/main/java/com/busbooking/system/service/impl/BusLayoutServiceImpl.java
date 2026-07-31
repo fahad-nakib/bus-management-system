@@ -5,6 +5,8 @@ import com.busbooking.system.dto.BusLayoutResponseDTO;
 import com.busbooking.system.entity.BusLayout;
 import com.busbooking.system.entity.Deck;
 import com.busbooking.system.entity.Seat;
+import com.busbooking.system.entity.enums.DeckTypeEnum;
+import com.busbooking.system.entity.enums.SeatTypeEnum;
 import com.busbooking.system.repository.BusLayoutRepository;
 import com.busbooking.system.repository.DeckRepository;
 import com.busbooking.system.repository.SeatRepository;
@@ -101,7 +103,7 @@ public class BusLayoutServiceImpl implements BusLayoutService {
         if (Boolean.TRUE.equals(layout.getHasLowerDeck()) && layout.getRowsLower() != null) {
             Deck lowerDeck = new Deck();
             lowerDeck.setBusLayout(layout);
-            lowerDeck.setDeckType("LOWER");
+            lowerDeck.setDeckType(DeckTypeEnum.LOWER);
             lowerDeck.setDeckLabel("L");
             Deck savedLowerDeck = deckRepository.save(lowerDeck);
 
@@ -112,7 +114,7 @@ public class BusLayoutServiceImpl implements BusLayoutService {
         if (Boolean.TRUE.equals(layout.getHasUpperDeck()) && layout.getRowsUpper() != null) {
             Deck upperDeck = new Deck();
             upperDeck.setBusLayout(layout);
-            upperDeck.setDeckType("UPPER");
+            upperDeck.setDeckType(DeckTypeEnum.UPPER);
             upperDeck.setDeckLabel("U");
             Deck savedUpperDeck = deckRepository.save(upperDeck);
 
@@ -132,9 +134,9 @@ public class BusLayoutServiceImpl implements BusLayoutService {
                 String seatLabel = prefix + "-" + rowChar + col; // e.g., L-A1, L-A2, U-A1
 
                 // বাসের দুই পাশের সিটগুলোকে WINDOW এবং মাঝের সিটগুলোকে AISLE হিসেবে মার্ক করার লজিক
-                String seatType = "AISLE";
+                SeatTypeEnum seatType = SeatTypeEnum.AISLE;
                 if (col == 1 || col == layout.getColumnsPerRow()) {
-                    seatType = "WINDOW";
+                    seatType = SeatTypeEnum.WINDOW;
                 }
 
                 // আপনার Seat এনটিটির কনস্ট্রাক্টর অনুযায়ী অবজেক্ট ইনিশিয়ালাইজেশন

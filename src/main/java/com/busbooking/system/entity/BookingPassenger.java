@@ -1,10 +1,11 @@
 package com.busbooking.system.entity;
 
+import com.busbooking.system.entity.enums.GenderEnum;
 import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "booking_passengers") // [cite: 58]
+@Table(name = "booking_passengers")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -14,21 +15,21 @@ public class BookingPassenger {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "passenger_id")
-    private Long passengerId; // [cite: 58]
+    private Long passengerId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "booking_id", nullable = false)
-    private Booking booking; // [cite: 58]
+    private Booking booking;
 
     @Column(name = "full_name", length = 150, nullable = false)
-    private String fullName; // [cite: 58]
+    private String fullName;
 
     @Column(name = "age")
-    private Short age; // [cite: 58]
+    private Short age;
 
     @Column(name = "gender", length = 20)
-    private String gender; // [cite: 58]
+    private GenderEnum gender;
 
     @Column(name = "phone_number", length = 20)
-    private String phoneNumber; // [cite: 58]
+    private String phoneNumber;
 }

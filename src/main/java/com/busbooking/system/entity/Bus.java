@@ -1,5 +1,7 @@
 package com.busbooking.system.entity;
 
+import com.busbooking.system.entity.enums.AcTypeEnum;
+import com.busbooking.system.entity.enums.ClassTypeEnum;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.ZonedDateTime;
@@ -28,10 +30,10 @@ public class Bus {
     private BusLayout busLayout;
 
     @Column(name = "ac_type", length = 20, nullable = false)
-    private String acType;
+    private AcTypeEnum acType;
 
     @Column(name = "class_type", length = 30, nullable = false)
-    private String classType;
+    private ClassTypeEnum classType;
 
     @Column(name = "manufacturer", length = 50)
     private String manufacturer;

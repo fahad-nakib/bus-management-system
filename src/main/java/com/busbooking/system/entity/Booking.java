@@ -1,5 +1,6 @@
 package com.busbooking.system.entity;
 
+import com.busbooking.system.entity.enums.BookingChannelEnum;
 import com.busbooking.system.entity.enums.BookingStatusEnum;
 import jakarta.persistence.*;
 import lombok.*;
@@ -47,7 +48,7 @@ public class Booking {
     private BoardingDroppingPoint droppingPoint; // [cite: 57]
 
     @Column(name = "booking_channel", length = 30, nullable = false)
-    private String bookingChannel; // [cite: 58]
+    private BookingChannelEnum bookingChannel; // [cite: 58]
 
     @Enumerated(EnumType.STRING)
     @Column(name = "booking_status", nullable = false)

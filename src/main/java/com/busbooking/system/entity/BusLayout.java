@@ -1,5 +1,6 @@
 package com.busbooking.system.entity;
 
+import com.busbooking.system.entity.enums.LayoutTypeEnum;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.ZonedDateTime;
@@ -21,7 +22,7 @@ public class BusLayout {
     private String layoutName; // [cite: 22]
 
     @Column(name = "layout_type", length = 30, nullable = false)
-    private String layoutType; // [cite: 22, 64]
+    private LayoutTypeEnum layoutType; // [cite: 22, 64]
 
     @Column(name = "total_seats", nullable = false)
     private Short totalSeats; // [cite: 22]
