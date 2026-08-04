@@ -5,8 +5,8 @@ import lombok.*;
 
 @Entity
 @Table(
-        name = "route_stops", // [cite: 36]
-        uniqueConstraints = @UniqueConstraint(columnNames = {"route_id", "stop_order"}) // [cite: 39, 40]
+        name = "route_stops",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"route_id", "stop_order"})
 )
 @Getter
 @Setter
@@ -17,18 +17,18 @@ public class RouteStop {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "route_stop_id")
-    private Integer routeStopId; // [cite: 38]
+    private Integer routeStopId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "route_id", nullable = false)
-    private Route route; // [cite: 38]
+    private Route route;
 
     @Column(name = "stop_name", length = 150, nullable = false)
-    private String stopName; // [cite: 38]
+    private String stopName;
 
     @Column(name = "city", length = 100, nullable = false)
-    private String city; // [cite: 38]
+    private String city;
 
     @Column(name = "stop_order", nullable = false)
-    private Short stopOrder; // [cite: 38]
+    private Short stopOrder;
 }
