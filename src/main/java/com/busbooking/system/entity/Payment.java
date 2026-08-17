@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 
 @Entity
-@Table(name = "payments") // [cite: 60]
+@Table(name = "payments")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -18,41 +18,41 @@ public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "payment_id")
-    private Long paymentId; // [cite: 60]
+    private Long paymentId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "booking_id", nullable = false)
-    private Booking booking; // [cite: 60]
+    private Booking booking;
 
     @Column(name = "payment_method", length = 30, nullable = false)
-    private PaymentMethodEnum paymentMethod; // [cite: 60]
+    private PaymentMethodEnum paymentMethod;
 
     @Column(name = "payment_gateway", length = 50)
-    private String paymentGateway; // [cite: 60]
+    private String paymentGateway;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "payment_status", nullable = false)
-    private PaymentStatusEnum paymentStatus; // [cite: 61, 64]
+    private PaymentStatusEnum paymentStatus;
 
     @Column(name = "amount", precision = 10, scale = 2, nullable = false)
-    private BigDecimal amount; // [cite: 61]
+    private BigDecimal amount;
 
     @Column(name = "transaction_reference", length = 100)
-    private String transactionReference; // [cite: 61]
+    private String transactionReference;
 
     @Column(name = "gateway_response", columnDefinition = "JSONB")
-    private String gatewayResponse; // [cite: 61]
+    private String gatewayResponse;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "received_by_agent_id")
-    private User receivedByAgent; // [cite: 61]
+    private User receivedByAgent;
 
     @Column(name = "paid_at")
-    private ZonedDateTime paidAt; // [cite: 61]
+    private ZonedDateTime paidAt;
 
     @Column(name = "refunded_at")
-    private ZonedDateTime refundedAt; // [cite: 61]
+    private ZonedDateTime refundedAt;
 
     @Column(name = "created_at", updatable = false)
-    private ZonedDateTime createdAt; // [cite: 62]
+    private ZonedDateTime createdAt;
 }
